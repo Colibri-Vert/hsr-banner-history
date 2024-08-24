@@ -7,7 +7,11 @@ const config =
 	preprocess: vitePreprocess(),
 	kit:
 	{
-		adapter: adapter()
+		adapter: adapter(),
+		paths:
+		{
+			base: process.env.NODE_ENV === "production" ? "/hsr-banner-history" : ""
+		}
 	}
 }
 export default config
