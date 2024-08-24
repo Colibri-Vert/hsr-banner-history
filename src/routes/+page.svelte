@@ -1,5 +1,6 @@
 <script lang="ts">
 import { onMount } from "svelte"
+import { base } from "$app/paths"
 
 import banners from "../lib/banners"
 import characters, { type Character } from "../lib/characters"
@@ -159,7 +160,7 @@ function map(x: number): number
                         <tr>
                             {#each timeline as n}
                                 {#if n === State.ICON}
-                                    <td><img src={`/characters/${character.id}.png`} alt=""></td>
+                                    <td><img src="{base}/characters/{character.id}.png" alt=""></td>
                                 {:else if n !== State.NULL}
                                     <td style={`background-color: hsl(${colors[character.element]}%, ${map(n - 1) * 100}%)`}>
                                         <span>{n}</span>
@@ -173,7 +174,7 @@ function map(x: number): number
                         <tr>
                             {#each timeline as n}
                                 {#if n === State.ICON}
-                                    <td><img src={`/characters/${character.id}.png`} alt=""></td>
+                                    <td><img src="{base}/characters/{character.id}.png" alt=""></td>
                                 {:else if n !== State.NULL}
                                     <td style={`background-color: hsl(${colors[character.element]}%, ${map(n - 1) * 100}%)`}>
                                         <span>{n}</span>
