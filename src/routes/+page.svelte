@@ -138,11 +138,11 @@ function map(x: number): number
         <table class="character-names">
             <thead><th class="header"><span>Version</span></th></thead>
             <tbody>
-                {#each fiveStars as [character]}
+                {#each fiveStars as [character] (character.id)}
                     <tr><td class="header"><span>{character.name}</span></td></tr>
                 {/each}
                 <tr><td class="header"></td></tr>
-                {#each fourStars as [character]}
+                {#each fourStars as [character] (character.id)}
                     <tr><td class="header"><span>{character.name}</span></td></tr>
                 {/each}
             </tbody>
@@ -155,7 +155,7 @@ function map(x: number): number
                     {/each}
                 </thead>
                 <tbody>
-                    {#each fiveStars as [character, timeline]}
+                    {#each fiveStars as [character, timeline] (character.id)}
                         <tr>
                             {#each timeline as n}
                                 {#if n === State.ICON}
@@ -169,7 +169,7 @@ function map(x: number): number
                         </tr>
                     {/each}
                     <tr>{#each { length: keys.length * 2 } as _}<td></td>{/each}</tr>
-                    {#each fourStars as [character, timeline]}
+                    {#each fourStars as [character, timeline] (character.id)}
                         <tr>
                             {#each timeline as n}
                                 {#if n === State.ICON}
