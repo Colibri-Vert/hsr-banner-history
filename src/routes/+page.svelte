@@ -4,15 +4,21 @@ import { base } from "$app/paths"
 
 import banners from "../lib/banners"
 import characters, { type Character } from "../lib/characters"
+import lightCones, { type LightCone } from "../lib/light-cones"
 
 enum State { ICON = -1, NULL = 0 }
 enum SortType { FIRST_RELEASE, LAST_RERUN }
 
+type TableData<T extends Character | LightCone> = [T, number[], number, number]
+
 let versions: { [key: string]: number } = {}
 $: keys = Object.keys(versions)
 
-let fiveStars: [Character, number[], number, number][] = []
-let fourStars: [Character, number[], number, number][] = []
+let fiveStarCharacters: TableData<Character>[] = []
+let fourStarCharacters: TableData<Character>[] = []
+
+let fiveStarLightCones: TableData<LightCone>[] = []
+let fourStarLightCones: TableData<LightCone>[] = []
 
 let sort: SortType = SortType.FIRST_RELEASE
 
@@ -20,23 +26,27 @@ onMount(() =>
 {
     // Find unique version numbers
     let set: Set<string> = new Set()
-    for (let banner of banners) set.add(banner.version)
+    for (let banner of banners.characters) set.add(banner.version)
 
     let length = 0
     for (let version of set) versions[version] = length++ // Assign each version an index
 
-    // Separate five star and four star character/banner data from dataset
-    let fiveStarCharacters = characters.filter(character => character.rarity === 5)
-    let fiveStarBanners = banners.map(banner => [banner.character, versionToIndex(banner.version, banner.phase)] as [string, number])
+    // Separate five star and four star banner data from dataset
+    let fiveStarCharacterBanners = banners.characters.map(banner => banner.featured.map(feature =>
+        [feature, versionToIndex(banner.version, banner.phase)] as [string, number])).flat()
+    let fourStarCharacterBanners = banners.characters.map(banner => banner.rare.map(feature =>
+        [feature, versionToIndex(banner.version, banner.phase)] as [string, number])).flat()
 
-    let fourStarCharacters = characters.filter(character => character.rarity === 4)
-    let fourStarBanners = banners.map(banner =>
-        banner.featured.map(featured => [featured, versionToIndex(banner.version, banner.phase)] as [string, number])).flat()
+    let fiveStarLightConeBanners = banners.lightCones.map(banner => banner.featured.map(feature =>
+        [feature, versionToIndex(banner.version, banner.phase)] as [string, number])).flat()
+    let fourStarLightConeBanners = banners.lightCones.map(banner => banner.rare.map(feature =>
+        [feature, versionToIndex(banner.version, banner.phase)] as [string, number])).flat()
 
     // Process and sort data
-    fiveStars = processCharacters(fiveStarCharacters, fiveStarBanners)
-    fourStars = processCharacters(fourStarCharacters, fourStarBanners)
-    sortCharacters(sort)
+    fiveStarCharacters = process(characters.filter(character => character.rarity === 5), fiveStarCharacterBanners)
+    fourStarCharacters = process(characters.filter(character => character.rarity === 4), fourStarCharacterBanners)
+
+    sortFeatures(sort)
 })
 
 function versionToIndex(version: string, phase: number): number
@@ -44,27 +54,27 @@ function versionToIndex(version: string, phase: number): number
     return versions[version] * 2 + phase
 }
 
-function processCharacters(characters: Character[], banners: [string, number][]): [Character, number[], number, number][]
+function process<T extends Character | LightCone>(features: T[], banners: [string, number][]): TableData<T>[]
 {
-    let data: { [key: string]: [Character, number[]] } = {}
-    for (let character of characters)
+    let data: { [key: string]: [T, number[]] } = {}
+    for (let feature of features)
     {
-        // Assign each character a row of cells (initialized to the null state)
-        data[character.id] = [character, Array.from({ length: Object.keys(versions).length * 2 }, () => State.NULL)]
+        // Assign each feature a row of cells (initialized to the null state)
+        data[feature.id] = [feature, Array.from({ length: Object.keys(versions).length * 2 }, () => State.NULL)]
     }
 
-    for (let [character, index] of banners)
+    for (let [feature, index] of banners)
     {
-        // For a character's banner, set character icon in the corresponding row at the version index
-        let [, timeline] = data[character]
+        // For a feature's banner, set icon state in the corresponding row at the version index
+        let [, timeline] = data[feature]
         timeline[index] = State.ICON
     }
 
-    let list: [Character, number[], number, number][] = []
-    for (let [character, timeline] of Object.values(data))
+    let list: TableData<T>[] = []
+    for (let [feature, timeline] of Object.values(data))
     {
         let start = timeline.findIndex(value => value === State.ICON)
-        if (start === -1) continue // Skip characters with no banners
+        if (start === -1) continue // Skip features with no banners
 
         // Fill in cells with number of phases since last banner
         let time = 0
@@ -74,28 +84,28 @@ function processCharacters(characters: Character[], banners: [string, number][])
             else timeline[i] = ++time
         }
 
-        list.push([character, timeline, start, time]) // Store start and time since last rerun for sorting
+        list.push([feature, timeline, start, time]) // Store start and time since last rerun for sorting
     }
 
     return list
 }
 
-function sortCharacters(type: SortType)
+function sortFeatures(type: SortType)
 {
     switch (type)
     {
         case SortType.FIRST_RELEASE:
         {
             // Sort by start index
-            fiveStars = fiveStars.sort(([,, a], [,, b]) => a - b)
-            fourStars = fourStars.sort(([,, a], [,, b]) => a - b)
+            fiveStarCharacters = fiveStarCharacters.sort(([,, a], [,, b]) => a - b)
+            fourStarCharacters = fourStarCharacters.sort(([,, a], [,, b]) => a - b)
             break
         }
         case SortType.LAST_RERUN:
         {
             // Sort by phases since last rerun (if equal, sort by newest character)
-            fiveStars = fiveStars.sort(([,, u, a], [,, v, b]) => a === b ? v - u : b - a)
-            fourStars = fourStars.sort(([,, u, a], [,, v, b]) => a === b ? v - u : b - a)
+            fiveStarCharacters = fiveStarCharacters.sort(([,, u, a], [,, v, b]) => a === b ? v - u : b - a)
+            fourStarCharacters = fourStarCharacters.sort(([,, u, a], [,, v, b]) => a === b ? v - u : b - a)
             break
         }
     }
@@ -129,7 +139,7 @@ function map(x: number): number
         <h1>Honkai: Star Rail Banner History</h1>
         <form>
             <span>Sort by:</span>
-            <select bind:value={sort} on:change={() => sortCharacters(sort)}>
+            <select bind:value={sort} on:change={() => sortFeatures(sort)}>
                 <option value={SortType.FIRST_RELEASE}>First Release</option>
                 <option value={SortType.LAST_RERUN}>Last Rerun</option>
             </select>
@@ -139,11 +149,11 @@ function map(x: number): number
         <table class="character-names">
             <thead><th class="header"><span>Version</span></th></thead>
             <tbody>
-                {#each fiveStars as [character] (character.id)}
+                {#each fiveStarCharacters as [character] (character.id)}
                     <tr><td class="header"><span>{character.name}</span></td></tr>
                 {/each}
                 <tr><td class="header"></td></tr>
-                {#each fourStars as [character] (character.id)}
+                {#each fourStarCharacters as [character] (character.id)}
                     <tr><td class="header"><span>{character.name}</span></td></tr>
                 {/each}
             </tbody>
@@ -156,7 +166,7 @@ function map(x: number): number
                     {/each}
                 </thead>
                 <tbody>
-                    {#each fiveStars as [character, timeline] (character.id)}
+                    {#each fiveStarCharacters as [character, timeline] (character.id)}
                         <tr>
                             {#each timeline as n}
                                 {#if n === State.ICON}
@@ -170,7 +180,7 @@ function map(x: number): number
                         </tr>
                     {/each}
                     <tr>{#each { length: keys.length * 2 } as _}<td></td>{/each}</tr>
-                    {#each fourStars as [character, timeline] (character.id)}
+                    {#each fourStarCharacters as [character, timeline] (character.id)}
                         <tr>
                             {#each timeline as n}
                                 {#if n === State.ICON}

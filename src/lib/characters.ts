@@ -219,6 +219,12 @@ let characters: Character[] =
         rarity: 4
     },
     {
+        id: "march-7th-hunt",
+        name: "March 7th",
+        element: "imaginary",
+        rarity: 4
+    },
+    {
         id: "misha",
         name: "Misha",
         element: "ice",
@@ -309,9 +315,39 @@ let characters: Character[] =
         rarity: 5
     },
     {
-        id: "trailblazer",
+        id: "trailblazer-female-destruction",
         name: "Trailblazer",
-        element: "physical, fire, imaginary",
+        element: "physical",
+        rarity: 5
+    },
+    {
+        id: "trailblazer-female-harmony",
+        name: "Trailblazer",
+        element: "imaginary",
+        rarity: 5
+    },
+    {
+        id: "trailblazer-female-preservation",
+        name: "Trailblazer",
+        element: "fire",
+        rarity: 5
+    },
+    {
+        id: "trailblazer-male-destruction",
+        name: "Trailblazer",
+        element: "physical",
+        rarity: 5
+    },
+    {
+        id: "trailblazer-male-harmony",
+        name: "Trailblazer",
+        element: "imaginary",
+        rarity: 5
+    },
+    {
+        id: "trailblazer-male-preservation",
+        name: "Trailblazer",
+        element: "fire",
         rarity: 5
     },
     {
