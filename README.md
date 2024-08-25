@@ -2,9 +2,9 @@
 
 ## Overview
 
-This is a visualizer for the banner history in the video game Honkai: Star Rail. This is heavily inspired by the character release timeline for Genshin Impact found on [paimon.moe](https://paimon.moe/banners), but nothing similar seems to exist for HSR at the moment.
+A visualizer for the banner history in the video game Honkai: Star Rail. This is heavily inspired by the character release timeline for Genshin Impact found on [paimon.moe](https://paimon.moe/banners), however no similar website appears to exist for HSR at the moment.
 
-The webpage currently displays the banner history of 5 star and 4 star characters, and allows them to be sorted based on either the character's release date or their last rerun. It currently does not display light cone banners, but this will most likely be added in the future.
+This is a static site with no backend. It has been hosted on GitHub Pages at [https://colibri-vert.github.io/hsr-banner-history](https://colibri-vert.github.io/hsr-banner-history). The webpage currently displays all limited banner history of 5 star and 4 star characters and light cones, and allows them to be sorted based on either the character/light cone's release date or last rerun.
 
 ## Setup
 

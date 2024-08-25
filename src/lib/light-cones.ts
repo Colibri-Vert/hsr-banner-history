@@ -238,7 +238,7 @@ let lightCones: LightCone[] =
         rarity: 5
     },
     {
-        id: "only-silence.remains",
+        id: "only-silence-remains",
         name: "Only Silence Remains",
         rarity: 4
     },
@@ -378,8 +378,8 @@ let lightCones: LightCone[] =
         rarity: 4
     },
     {
-        id: "the-unreacheable-side",
-        name: "The Unreacheable Side",
+        id: "the-unreachable-side",
+        name: "The Unreachable Side",
         rarity: 5
     },
     {

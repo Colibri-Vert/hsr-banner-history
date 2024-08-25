@@ -11,8 +11,8 @@ enum SortType { FIRST_RELEASE, LAST_RERUN }
 
 type TableData<T extends Character | LightCone> = [T, number[], number, number]
 
-let versions: { [key: string]: number } = {}
-$: keys = Object.keys(versions)
+let versions: string[] = []
+let sort: SortType = SortType.FIRST_RELEASE
 
 let fiveStarCharacters: TableData<Character>[] = []
 let fourStarCharacters: TableData<Character>[] = []
@@ -20,18 +20,23 @@ let fourStarCharacters: TableData<Character>[] = []
 let fiveStarLightCones: TableData<LightCone>[] = []
 let fourStarLightCones: TableData<LightCone>[] = []
 
-let sort: SortType = SortType.FIRST_RELEASE
-
 onMount(() =>
 {
-    // Find unique version numbers
-    let set: Set<string> = new Set()
-    for (let banner of banners.characters) set.add(banner.version)
-
-    let length = 0
-    for (let version of set) versions[version] = length++ // Assign each version an index
+    // Find unique version numbers and assign each an index
+    let set: Map<string, number> = new Map(), length = 0
+    for (let banner of banners.characters)
+    {
+        if (set.has(banner.version)) continue
+        set.set(banner.version, length++)
+    }
+    versions = [...set.keys()]
 
     // Separate five star and four star banner data from dataset
+    function versionToIndex(version: string, phase: number): number
+    {
+        return set.get(version)! * 2 + phase
+    }
+
     let fiveStarCharacterBanners = banners.characters.map(banner => banner.featured.map(feature =>
         [feature, versionToIndex(banner.version, banner.phase)] as [string, number])).flat()
     let fourStarCharacterBanners = banners.characters.map(banner => banner.rare.map(feature =>
@@ -46,13 +51,11 @@ onMount(() =>
     fiveStarCharacters = process(characters.filter(character => character.rarity === 5), fiveStarCharacterBanners)
     fourStarCharacters = process(characters.filter(character => character.rarity === 4), fourStarCharacterBanners)
 
+    fiveStarLightCones = process(lightCones.filter(lightCone => lightCone.rarity === 5), fiveStarLightConeBanners)
+    fourStarLightCones = process(lightCones.filter(lightCone => lightCone.rarity === 4), fourStarLightConeBanners)
+
     sortFeatures(sort)
 })
-
-function versionToIndex(version: string, phase: number): number
-{
-    return versions[version] * 2 + phase
-}
 
 function process<T extends Character | LightCone>(features: T[], banners: [string, number][]): TableData<T>[]
 {
@@ -90,6 +93,15 @@ function process<T extends Character | LightCone>(features: T[], banners: [strin
     return list
 }
 
+function sortAll(comparator: (a: TableData<Character | LightCone>, b: TableData<Character | LightCone>) => number)
+{
+    fiveStarCharacters = fiveStarCharacters.sort(comparator)
+    fourStarCharacters = fourStarCharacters.sort(comparator)
+    
+    fiveStarLightCones = fiveStarLightCones.sort(comparator)
+    fourStarLightCones = fourStarLightCones.sort(comparator)
+}
+
 function sortFeatures(type: SortType)
 {
     switch (type)
@@ -97,15 +109,13 @@ function sortFeatures(type: SortType)
         case SortType.FIRST_RELEASE:
         {
             // Sort by start index
-            fiveStarCharacters = fiveStarCharacters.sort(([,, a], [,, b]) => a - b)
-            fourStarCharacters = fourStarCharacters.sort(([,, a], [,, b]) => a - b)
+            sortAll(([,, a], [,, b]) => a - b)
             break
         }
         case SortType.LAST_RERUN:
         {
             // Sort by phases since last rerun (if equal, sort by newest character)
-            fiveStarCharacters = fiveStarCharacters.sort(([,, u, a], [,, v, b]) => a === b ? v - u : b - a)
-            fourStarCharacters = fourStarCharacters.sort(([,, u, a], [,, v, b]) => a === b ? v - u : b - a)
+            sortAll(([,, u, a], [,, v, b]) => a === b ? v - u : b - a)
             break
         }
     }
@@ -156,12 +166,20 @@ function map(x: number): number
                 {#each fourStarCharacters as [character] (character.id)}
                     <tr><td class="header"><span>{character.name}</span></td></tr>
                 {/each}
+                <tr><td class="header"></td></tr>
+                {#each fiveStarLightCones as [lightCone] (lightCone.id)}
+                    <tr><td class="header"><span>{lightCone.name}</span></td></tr>
+                {/each}
+                <tr><td class="header"></td></tr>
+                {#each fourStarLightCones as [lightCone] (lightCone.id)}
+                    <tr><td class="header"><span>{lightCone.name}</span></td></tr>
+                {/each}
             </tbody>
         </table>
         <div class="body">
             <table>
                 <thead>
-                    {#each keys as version}
+                    {#each versions as version}
                         <th colspan="2"><span>{version}</span></th>
                     {/each}
                 </thead>
@@ -179,7 +197,7 @@ function map(x: number): number
                             {/each}
                         </tr>
                     {/each}
-                    <tr>{#each { length: keys.length * 2 } as _}<td></td>{/each}</tr>
+                    <tr>{#each { length: versions.length * 2 } as _}<td></td>{/each}</tr>
                     {#each fourStarCharacters as [character, timeline] (character.id)}
                         <tr>
                             {#each timeline as n}
@@ -187,6 +205,34 @@ function map(x: number): number
                                     <td><img src="{base}/characters/{character.id}.png" alt=""></td>
                                 {:else if n !== State.NULL}
                                     <td style={`background-color: hsl(${colors[character.element]}%, ${map(n - 1) * 100}%)`}>
+                                        <span>{n}</span>
+                                    </td>
+                                {:else}<td></td>{/if}
+                            {/each}
+                        </tr>
+                    {/each}
+                    <tr>{#each { length: versions.length * 2 } as _}<td></td>{/each}</tr>
+                    {#each fiveStarLightCones as [lightCone, timeline] (lightCone.id)}
+                        <tr>
+                            {#each timeline as n}
+                                {#if n === State.ICON}
+                                    <td><img src="{base}/light-cones/{lightCone.id}.png" alt=""></td>
+                                {:else if n !== State.NULL}
+                                    <td style={`background-color: hsl(${colors["ice"]}%, ${map(n - 1) * 100}%)`}>
+                                        <span>{n}</span>
+                                    </td>
+                                {:else}<td></td>{/if}
+                            {/each}
+                        </tr>
+                    {/each}
+                    <tr>{#each { length: versions.length * 2 } as _}<td></td>{/each}</tr>
+                    {#each fourStarLightCones as [lightCone, timeline] (lightCone.id)}
+                        <tr>
+                            {#each timeline as n}
+                                {#if n === State.ICON}
+                                    <td><img src="{base}/light-cones/{lightCone.id}.png" alt=""></td>
+                                {:else if n !== State.NULL}
+                                    <td style={`background-color: hsl(${colors["ice"]}%, ${map(n - 1) * 100}%)`}>
                                         <span>{n}</span>
                                     </td>
                                 {:else}<td></td>{/if}
@@ -300,7 +346,7 @@ td > img {
 }
 
 .header  {
-    min-width: 250px;
+    min-width: 320px;
     padding: 0 24px;
     border: 1px solid var(--border-color);
 }
