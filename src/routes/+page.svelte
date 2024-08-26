@@ -117,13 +117,14 @@ function sortFeatures(type: SortType)
         }
         case SortType.LAST_RERUN:
         {
-            // Sort by phases since last rerun (if equal, sort by newest character)
-            sortAll(([,, u, a], [,, v, b]) => a === b ? v - u : b - a)
+            // Sort by phases since last rerun (if equal, sort by oldest character)
+            sortAll(([,, u, a], [,, v, b]) => a === b ? u - v : b - a)
             break
         }
     }
 }
 
+let lightConeColor: string = "212, 48"
 let colors: { [key: string]: string } =
 {
     physical:  "0,   0",
@@ -234,7 +235,7 @@ function map(x: number): number
                                     {#if n === State.ICON}
                                         <td><img src="{base}/light-cones/{lightCone.id}.png" alt=""></td>
                                     {:else if n !== State.NULL}
-                                        <td style={`background-color: hsl(${colors["ice"]}%, ${map(n - 1) * 100}%)`}>
+                                        <td style={`background-color: hsl(${lightConeColor}%, ${map(n - 1) * 100}%)`}>
                                             <span>{n}</span>
                                         </td>
                                     {:else}<td></td>{/if}
@@ -248,7 +249,7 @@ function map(x: number): number
                                     {#if n === State.ICON}
                                         <td><img src="{base}/light-cones/{lightCone.id}.png" alt=""></td>
                                     {:else if n !== State.NULL}
-                                        <td style={`background-color: hsl(${colors["ice"]}%, ${map(n - 1) * 100}%)`}>
+                                        <td style={`background-color: hsl(${lightConeColor}%, ${map(n - 1) * 100}%)`}>
                                             <span>{n}</span>
                                         </td>
                                     {:else}<td></td>{/if}
@@ -295,7 +296,7 @@ function map(x: number): number
 }
 
 .title img {
-    height: 64px;
+    height: 70px;
 }
 
 .title h1 {
