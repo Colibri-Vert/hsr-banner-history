@@ -72,6 +72,7 @@ function process<T extends Character | LightCone>(features: T[], banners: [strin
     for (let [feature, index] of banners)
     {
         // For a feature's banner, set icon state in the corresponding row at the version index
+        if (data[feature] === undefined) console.log(feature)
         let [, timeline] = data[feature]
         timeline[index] = State.ICON
     }

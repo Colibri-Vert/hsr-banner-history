@@ -231,7 +231,7 @@ let characters: Character[] =
         rarity: 4
     },
     {
-        id: "mose",
+        id: "moze",
         name: "Moze",
         element: "lightning",
         rarity: 4

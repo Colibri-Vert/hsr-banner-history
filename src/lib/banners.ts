@@ -237,6 +237,30 @@ let banners: { characters: Banner[], lightCones: Banner[] } =
             rare: ["hook", "guinaifen", "arlan"],
             version: "2.4",
             phase: 1
+        },
+        {
+            featured: ["feixiao"],
+            rare: ["moze", "asta", "luka"],
+            version: "2.5",
+            phase: 0
+        },
+        {
+            featured: ["robin", "black-swan", "kafka"],
+            rare: ["moze", "asta", "luka"],
+            version: "2.5",
+            phase: 0
+        },
+        {
+            featured: ["lingsha"],
+            rare: ["misha", "natasha", "guinaifen"],
+            version: "2.5",
+            phase: 1
+        },
+        {
+            featured: ["topaz-and-numby"],
+            rare: ["misha", "natasha", "guinaifen"],
+            version: "2.5",
+            phase: 1
         }
     ],
     lightCones:
@@ -467,6 +491,30 @@ let banners: { characters: Banner[], lightCones: Banner[] } =
             featured: ["earthly-escapade"],
             rare: ["a-secret-vow", "eyes-of-the-prey", "poised-to-bloom"],
             version: "2.4",
+            phase: 1
+        },
+        {
+            featured: ["i-venture-forth-to-hunt"],
+            rare: ["swordplay", "resolution-shines-as-pearls-of-sweat", "the-birth-of-the-self"],
+            version: "2.5",
+            phase: 0
+        },
+        {
+            featured: ["flowing-nightglow", "reforged-remembrance", "patience-is-all-you-need"],
+            rare: ["swordplay", "resolution-shines-as-pearls-of-sweat", "the-birth-of-the-self"],
+            version: "2.5",
+            phase: 0
+        },
+        {
+            featured: ["scent-alone-stays-true"],
+            rare: ["shadowed-by-night", "shared-feeling", "planetary-rendezvous"],
+            version: "2.5",
+            phase: 1
+        },
+        {
+            featured: ["worrisome-blissful"],
+            rare: ["shadowed-by-night", "shared-feeling", "planetary-rendezvous"],
+            version: "2.5",
             phase: 1
         }
     ]
